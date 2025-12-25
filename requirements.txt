@@ -1,0 +1,7 @@
+numpy
+librosa
+joblib
+tqdm
+scikit-learn
+flask
+reportlab

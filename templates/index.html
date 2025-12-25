@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DeepGuard — AI Audio Authentication</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+/* ---------- GLOBAL ---------- */
+* { 
+    box-sizing: border-box; 
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --primary-gradient: linear-gradient(90deg, #3af5e5, #9b87ff);
+    --primary-dark: #0f1c2e;
+    --secondary-dark: #070b14;
+    --card-bg: rgba(15,28,46,0.95);
+    --text-primary: #eaeaea;
+    --text-secondary: #c1c1c1;
+    --success: #3af5e5;
+    --danger: #ff4d4d;
+    --warning: #FF9800;
+    --info: #4CAF50;
+    --border-radius: 16px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, 'Inter', Arial, sans-serif;
+    background: linear-gradient(180deg, var(--primary-dark), var(--secondary-dark));
+    color: var(--text-primary);
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* ---------- SMOOTH SCROLL ---------- */
+html {
+    scroll-behavior: smooth;
+}
+
+/* ---------- CUSTOM SCROLLBAR ---------- */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(15,28,46,0.8);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #3af5e5, #9b87ff);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #2ad5c5, #8a76ee);
+}
+
+/* ---------- PARTICLES ---------- */
+.particle {
+    position: absolute;
+    background: rgba(58,245,229,0.2);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: floatParticle linear infinite;
+    filter: blur(0.5px);
+}
+@keyframes floatParticle {
+    from { transform: translateY(100vh) translateX(-20px); opacity: 0; }
+    20% { opacity: 1; }
+    to { transform: translateY(-10vh) translateX(20px); opacity: 0; }
+}
+
+/* ---------- ANIMATIONS ---------- */
+@keyframes fadeInUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px) scale(0.95); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
+
+.fade-in {
+    animation: fadeInUp 0.8s ease-out both;
+}
+
+.stagger-delay-1 { animation-delay: 0.1s; }
+.stagger-delay-2 { animation-delay: 0.2s; }
+.stagger-delay-3 { animation-delay: 0.3s; }
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(58,245,229,0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(58,245,229,0); }
+    100% { box-shadow: 0 0 0 0 rgba(58,245,229,0); }
+}
+
+@keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* ---------- HEADER ---------- */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 5%;
+    position: sticky;
+    top: 0;
+    background: rgba(15,28,46,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    z-index: 1000;
+    transition: var(--transition);
+}
+
+.header-scrolled {
+    padding: 12px 5%;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo i {
+    font-size: 20px;
+}
+
+nav {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 15px;
+    font-weight: 500;
+    transition: var(--transition);
+    position: relative;
+    padding: 8px 0;
+}
+
+nav a:hover {
+    color: var(--success);
+}
+
+nav a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary-gradient);
+    transition: width 0.3s ease;
+}
+
+nav a:hover::after {
+    width: 100%;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    background: var(--primary-gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #000;
+    font-size: 14px;
+}
+
+/* ---------- AUTH MODAL ---------- */
+.auth-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+.auth-container {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 40px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    border: 1px solid rgba(58,245,229,0.2);
+    animation: fadeInUp 0.5s ease;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-header h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.auth-header p {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.auth-tabs {
+    display: flex;
+    margin-bottom: 30px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 15px;
+    text-align: center;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+}
+
+.auth-tab.active {
+    color: var(--success);
+}
+
+.auth-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--primary-gradient);
+}
+
+.auth-form {
+    display: none;
+}
+
+.auth-form.active {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 15px;
+    background: rgba(11,22,38,0.8);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: 15px;
+    transition: var(--transition);
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--success);
+    box-shadow: 0 0 0 2px rgba(58,245,229,0.1);
+}
+
+.auth-error {
+    color: var(--danger);
+    font-size: 14px;
+    margin-top: 10px;
+    display: none;
+}
+
+.auth-error.show {
+    display: block;
+}
+
+.auth-success {
+    color: var(--success);
+    font-size: 14px;
+    margin-top: 10px;
+    display: none;
+}
+
+.auth-success.show {
+    display: block;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 20px;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.auth-footer a {
+    color: var(--success);
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.close-auth {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 24px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.close-auth:hover {
+    color: var(--success);
+}
+
+/* ---------- HERO ---------- */
+.hero {
+    text-align: center;
+    padding: 120px 20px 80px;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.hero h1 {
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 800;
+    margin-bottom: 24px;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #3af5e5 0%, #9b87ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -1px;
+}
+
+.hero p {
+    max-width: 700px;
+    margin: 0 auto 40px;
+    color: var(--text-secondary);
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    font-weight: 400;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(58,245,229,0.1);
+    padding: 10px 20px;
+    border-radius: 50px;
+    border: 1px solid rgba(58,245,229,0.2);
+    margin-bottom: 30px;
+    animation: float 3s ease-in-out infinite;
+}
+
+.hero-badge i {
+    color: var(--success);
+}
+
+/* ---------- UPLOAD CARD ---------- */
+.upload-card {
+    margin: 60px auto;
+    width: min(90%, 600px);
+    padding: 40px 30px;
+    text-align: center;
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    border: 2px dashed rgba(58,245,229,0.3);
+    transition: var(--transition);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(58,245,229,0.1), transparent);
+    transition: left 0.7s ease;
+}
+
+.upload-card:hover::before {
+    left: 100%;
+}
+
+.upload-card:hover {
+    border-color: var(--success);
+    box-shadow: 0 15px 50px rgba(58,245,229,0.2);
+    transform: translateY(-5px);
+}
+
+.upload-header {
+    margin-bottom: 30px;
+}
+
+.upload-header i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.upload-header h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+.upload-header p {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+/* ---------- INPUT & BUTTON ---------- */
+.file-input-wrapper {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.file-input-wrapper input[type="file"] {
+    width: 100%;
+    padding: 18px;
+    background: rgba(11,22,38,0.8);
+    color: white;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    font-size: 14px;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.file-input-wrapper input[type="file"]:hover {
+    border-color: var(--success);
+    background: rgba(11,22,38,0.9);
+}
+
+.file-input-wrapper input[type="file"]::file-selector-button {
+    background: var(--primary-gradient);
+    border: none;
+    color: #000;
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin-right: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.file-input-wrapper input[type="file"]::file-selector-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(58,245,229,0.3);
+}
+
+/* ---------- BUTTONS ---------- */
+.btn {
+    padding: 16px 32px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-width: 160px;
+}
+
+.btn-primary {
+    background: var(--primary-gradient);
+    color: #000;
+    box-shadow: 0 5px 20px rgba(58,245,229,0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(58,245,229,0.4);
+}
+
+.btn-secondary {
+    background: rgba(255,255,255,0.1);
+    color: var(--text-primary);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.btn-secondary:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background: linear-gradient(90deg, #ff4d4d, #ff6b6b);
+    color: white;
+}
+
+.btn-warning {
+    background: linear-gradient(90deg, #FF9800, #FFB74D);
+    color: white;
+}
+
+.btn-success {
+    background: linear-gradient(90deg, #4CAF50, #66BB6A);
+    color: white;
+}
+
+.btn-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+
+/* ---------- RECORDING ---------- */
+.recording-status {
+    margin: 20px 0;
+    padding: 15px;
+    background: rgba(58,245,229,0.1);
+    border-radius: 12px;
+    border-left: 4px solid var(--success);
+}
+
+.recording-status.recording {
+    border-left-color: var(--danger);
+    animation: pulse 1.5s infinite;
+}
+
+.recording-visualizer {
+    display: flex;
+    justify-content: center;
+    gap: 3px;
+    height: 40px;
+    margin: 15px 0;
+}
+
+.recording-bar {
+    width: 4px;
+    background: var(--primary-gradient);
+    border-radius: 2px;
+    animation: equalizer 1s ease infinite alternate;
+}
+
+@keyframes equalizer {
+    0%, 100% { height: 10px; }
+    50% { height: 40px; }
+}
+
+/* ---------- AUDIO PLAYER ---------- */
+.audio-player {
+    margin-top: 25px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.custom-audio-player {
+    width: 100%;
+    background: rgba(11,22,38,0.8);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.custom-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.custom-progress {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.custom-progress-filled {
+    height: 100%;
+    background: var(--primary-gradient);
+    width: 0%;
+    transition: width 0.1s linear;
+}
+
+.playback-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 5px;
+}
+
+/* ---------- RESULTS ---------- */
+.result-box {
+    margin-top: 30px;
+    padding: 25px;
+    background: rgba(11,22,38,0.8);
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(255,255,255,0.1);
+    animation: fadeInUp 0.5s ease;
+}
+
+.result-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.result-icon {
+    font-size: 32px;
+}
+
+.result-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.result-detail {
+    background: rgba(255,255,255,0.05);
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 3px solid var(--success);
+}
+
+.result-detail.danger {
+    border-left-color: var(--danger);
+}
+
+.result-detail.warning {
+    border-left-color: var(--warning);
+}
+
+.result-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.result-value {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.lime { color: var(--success); }
+.red { color: var(--danger); }
+.yellow { color: var(--warning); }
+
+/* ---------- FEATURES ---------- */
+.features-section {
+    padding: 80px 5%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.section-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.section-header p {
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.feature-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 35px 30px;
+    border: 1px solid rgba(58,245,229,0.1);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--success);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+.feature-icon {
+    font-size: 40px;
+    margin-bottom: 20px;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.feature-card h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.feature-card p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* ---------- TEAM ---------- */
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-top: 40px;
+}
+
+.team-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 30px;
+    text-align: center;
+    border: 1px solid rgba(58,245,229,0.1);
+    transition: var(--transition);
+}
+
+.team-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--success);
+}
+
+.team-avatar {
+    width: 80px;
+    height: 80px;
+    background: var(--primary-gradient);
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: #000;
+    font-weight: bold;
+}
+
+/* ---------- FOOTER ---------- */
+footer {
+    text-align: center;
+    padding: 50px 20px 30px;
+    margin-top: 80px;
+    background: rgba(11,22,38,0.8);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    position: relative;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 30px 0;
+}
+
+.footer-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.footer-links a:hover {
+    color: var(--success);
+}
+
+.footer-bottom {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+/* ---------- LOADING STATES ---------- */
+.loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    animation: shimmer 2s infinite;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+    header {
+        padding: 15px 20px;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    nav {
+        gap: 20px;
+    }
+    
+    .hero {
+        padding: 100px 20px 60px;
+    }
+    
+    .upload-card {
+        width: 95%;
+        padding: 30px 20px;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .team-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 2rem;
+    }
+    
+    nav {
+        gap: 15px;
+    }
+    
+    nav a {
+        font-size: 14px;
+    }
+    
+    .feature-card {
+        padding: 25px 20px;
+    }
+    
+    .auth-container {
+        padding: 30px 20px;
+    }
+}
+
+/* ---------- LOGIN PROMPT ---------- */
+.login-prompt {
+    text-align: center;
+    padding: 40px;
+    background: rgba(11,22,38,0.8);
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(255,255,255,0.1);
+    margin-top: 30px;
+}
+
+.login-prompt i {
+    font-size: 48px;
+    margin-bottom: 20px;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.login-prompt h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.login-prompt p {
+    color: var(--text-secondary);
+    margin-bottom: 25px;
+    font-size: 16px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="particles"></div>
+
+<!-- Auth Modal -->
+<div class="auth-modal" id="authModal">
+    <div class="auth-container">
+        <button class="close-auth" id="closeAuth">&times;</button>
+        <div class="auth-header">
+            <h2 id="authTitle">Welcome to DeepGuard</h2>
+            <p id="authSubtitle">Access advanced audio deepfake detection</p>
+        </div>
+        
+        <div class="auth-tabs">
+            <button class="auth-tab active" id="loginTab">Login</button>
+            <button class="auth-tab" id="registerTab">Register</button>
+        </div>
+        
+        <!-- Login Form -->
+        <form class="auth-form active" id="loginForm">
+            <div class="form-group">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password" required>
+            </div>
+            <div class="auth-error" id="loginError">Invalid email or password</div>
+            <div class="auth-success" id="loginSuccess">Login successful! Redirecting...</div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+        </form>
+        
+        <!-- Register Form -->
+        <form class="auth-form" id="registerForm">
+            <div class="form-group">
+                <label for="registerName">Full Name</label>
+                <input type="text" id="registerName" placeholder="Enter your full name" required>
+            </div>
+            <div class="form-group">
+                <label for="registerEmail">Email</label>
+                <input type="email" id="registerEmail" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="registerPassword">Password</label>
+                <input type="password" id="registerPassword" placeholder="Create a password" required minlength="6">
+            </div>
+            <div class="form-group">
+                <label for="registerConfirmPassword">Confirm Password</label>
+                <input type="password" id="registerConfirmPassword" placeholder="Confirm your password" required>
+            </div>
+            <div class="auth-error" id="registerError"></div>
+            <div class="auth-success" id="registerSuccess">Registration successful! You can now login.</div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+                <i class="fas fa-user-plus"></i> Create Account
+            </button>
+        </form>
+        
+        <div class="auth-footer">
+            <p>By creating an account, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+        </div>
+    </div>
+</div>
+
+<header id="mainHeader">
+    <div class="logo">
+        <i class="fas fa-shield-alt"></i>
+        Deep<span>Guard</span>
+    </div>
+    <nav>
+        <a href="#home"><i class="fas fa-home"></i> Home</a>
+        <a href="#detection"><i class="fas fa-search"></i> Detection</a>
+        <a href="#features"><i class="fas fa-star"></i> Features</a>
+        <a href="#about"><i class="fas fa-info-circle"></i> About</a>
+    </nav>
+    <div class="user-info" id="userInfo" style="display: none;">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <span id="userName">User</span>
+        <button class="btn btn-secondary" id="logoutBtn" style="padding: 8px 16px;">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
+    <button class="btn btn-primary" id="authBtn" style="padding: 10px 20px;">
+        <i class="fas fa-user"></i> Login
+    </button>
+</header>
+
+<section id="home" class="hero fade-in">
+    <div class="hero-badge fade-in">
+        <i class="fas fa-bolt"></i>
+        <span>Unmask AI-Generated Audio </span>
+    </div>
+    <h1>AI Based <span>Deepfake</span> Audio Detection</h1>
+    <p>Human or Machine? Our advanced AI distinguishes real voices from synthetic fakes with precision. Upload audio now for instant analysis.</p>
+    <a href="#detection" class="btn btn-primary" id="startDetectionBtn">
+        <i class="fas fa-play"></i> Start Detection
+    </a>
+</section>
+
+<div id="detection" class="upload-card fade-in">
+    <div class="upload-header">
+        <i class="fas fa-file-upload"></i>
+        <h2>Audio Analysis</h2>
+        <p>Upload or record audio to detect AI-generated content</p>
+    </div>
+
+    <!-- Login Prompt (shown when not logged in) -->
+    <div class="login-prompt" id="loginPrompt">
+        <i class="fas fa-lock"></i>
+        <h3>Authentication Required</h3>
+        <p>Please login or create an account to access the audio detection features.</p>
+        <button class="btn btn-primary" id="promptAuthBtn">
+            <i class="fas fa-user"></i> Login / Register
+        </button>
+    </div>
+
+    <!-- Detection Interface (shown when logged in) -->
+    <div id="detectionInterface" style="display: none;">
+        <form action="/analyze" method="POST" enctype="multipart/form-data" class="fade-in stagger-delay-1">
+            <div class="file-input-wrapper">
+                <input type="file" name="audio" 
+                       accept=".wav,.mp3,.flac,.webm,.opus,.ogg,.m4a,.aac" 
+                       required>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-chart-bar"></i> Analyze Audio
+            </button>
+        </form>
+
+        <div class="fade-in stagger-delay-2">
+            <div class="recording-status" id="recStatus">
+                <i class="fas fa-microphone"></i>
+                <span>Ready to record</span>
+            </div>
+            
+            <div class="recording-visualizer" id="visualizer" style="display: none;">
+                <div class="recording-bar" style="animation-delay: 0.1s"></div>
+                <div class="recording-bar" style="animation-delay: 0.2s"></div>
+                <div class="recording-bar" style="animation-delay: 0.3s"></div>
+                <div class="recording-bar" style="animation-delay: 0.4s"></div>
+                <div class="recording-bar" style="animation-delay: 0.5s"></div>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn btn-primary" id="recordBtn">
+                    <i class="fas fa-microphone"></i> Start Recording
+                </button>
+                <button class="btn btn-danger" id="stopBtn" style="display: none;">
+                    <i class="fas fa-stop"></i> Stop
+                </button>
+                <button class="btn btn-success" id="playBtn" style="display: none;">
+                    <i class="fas fa-play"></i> Playback
+                </button>
+            </div>
+        </div>
+
+        <!-- Audio Player -->
+        <div class="audio-player" id="audioPlayer">
+            <audio id="audioPreview" controls style="display: none;"></audio>
+            <div class="custom-audio-player">
+                <div class="custom-controls">
+                    <button id="customPlay" class="btn btn-secondary" style="padding: 8px 16px;">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <div class="custom-progress" id="customProgress">
+                        <div class="custom-progress-filled" id="customProgressFilled"></div>
+                    </div>
+                    <span id="currentTime">0:00</span>
+                </div>
+                <div class="playback-info">
+                    <span id="duration">0:00</span>
+                    <span id="playbackStatus">Paused</span>
+                </div>
+            </div>
+        </div>
+
+        <form id="uploadRecorded" action="/analyze" method="POST"
+              enctype="multipart/form-data" style="display:none;">
+            <input type="file" name="audio" id="recordedFile">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-upload"></i> Upload Recording
+            </button>
+        </form>
+
+        {% if result %}
+        <div class="result-box fade-in">
+            <div class="result-header">
+                <div class="result-icon">
+                    {% if color == 'lime' %}
+                    <i class="fas fa-check-circle lime"></i>
+                    {% else %}
+                    <i class="fas fa-times-circle red"></i>
+                    {% endif %}
+                </div>
+                <div>
+                    <h3 class="{{ color }}">{{ result }}</h3>
+                    <p>Analysis completed</p>
+                </div>
+            </div>
+            
+            <div class="result-details">
+                <div class="result-detail">
+                    <div class="result-label">Confidence Score</div>
+                    <div class="result-value {{ color }}">{{ confidence }}</div>
+                </div>
+                <div class="result-detail">
+                    <div class="result-label">Audio Duration</div>
+                    <div class="result-value">{{ duration }}</div>
+                </div>
+                <div class="result-detail {{ 'warning' if noise_flag == 'Yes' else '' }}">
+                    <div class="result-label">Noise Detection</div>
+                    <div class="result-value {{ noise_color }}">{{ noise_flag }}</div>
+                </div>
+            </div>
+
+            {% if pdf_url %}
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="{{ url_for('download', filename=pdf_url) }}" class="btn btn-secondary">
+                    <i class="fas fa-download"></i> Download Detailed Report
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<section id="features" class="features-section fade-in">
+    <div class="section-header">
+        <h2>Why Choose DeepGuard</h2>
+        <p>Advanced features for comprehensive audio authentication</p>
+    </div>
+    
+    <div class="features-grid">
+        <div class="feature-card fade-in stagger-delay-1">
+            <div class="feature-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            <h3>AI-Powered Detection</h3>
+            <p>Utilizing a robust Random Forest classifier trained on thousands of real and
+                 synthetic audio samples to provide detection and reliability.</p>
+        </div>
+        
+        <div class="feature-card fade-in stagger-delay-2">
+            <div class="feature-icon">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <h3>Real-Time Analysis</h3>
+            <p>Get instant results with our optimized processing pipeline. Analyze audio in seconds, not minutes.</p>
+        </div>
+        
+        <div class="feature-card fade-in stagger-delay-3">
+            <div class="feature-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3>High-Fidelity Detection Precision</h3>
+            <p>Built on a robust Random Forest classifier, our system achieves a verified 96.765% 
+                precision rate. By analyzing thousands of real and synthetic samples, 
+                the model ensures superior distinction between authentic audio 
+                and sophisticated deepfakes.</p>
+        </div>
+    </div>
+</section>
+
+<section id="about" class="features-section fade-in">
+    <div class="section-header">
+        <h2>About The Project</h2>
+        <p>An innovative solution in the fight against audio deepfakes</p>
+    </div>
+    
+    <div class="feature-card" style="max-width: 900px; margin: 0 auto 50px;">
+        <div class="feature-icon">
+            <i class="fas fa-project-diagram"></i>
+        </div>
+        <h3>AI-Based Deepfake Audio Detection</h3>
+        <p>
+    This project focuses on the detection and verification of audio authenticity using modern machine learning techniques to counter the rising threat of AI-generated and manipulated speech.
+    <br><br>
+    The system examines a wide range of acoustic features such as spectral properties, voice characteristics, and noise patterns to differentiate between genuine human speech and synthetically generated audio. By applying ensemble learning models and signal processing methods, the system delivers accurate and reliable detection results.
+    <br><br>
+    Developed as a <strong>Final Year Project</strong> in <strong>Cyber Security and Digital Forensics</strong>, this work addresses a critical challenge in digital evidence verification and contributes to enhancing trust in audio-based communications.
+</p>
+
+    </div>
+
+    <div class="section-header">
+        <h2>Development Team</h2>
+        <p>The minds behind DeepGuard</p>
+    </div>
+    
+    <div class="team-grid">
+        <div class="team-card fade-in stagger-delay-1">
+            <div class="team-avatar">1</div>
+            <h3>Saqib Riaz</h3>
+            <p>Python + Flask Developer</p>
+            <div style="margin-top: 15px;">
+                <small>Email: saqibriaz55@gmail.com</small>
+            </div>
+        </div>
+        
+        <div class="team-card fade-in stagger-delay-2">
+            <div class="team-avatar">2</div>
+            <h3>Muhammad Aleem</h3>
+            <p>Email: muhammadaleem3255@gmail.com,</p>
+            <div style="margin-top: 15px;">
+                <small></small>
+            </div>
+        </div>
+        
+        <div class="team-card fade-in stagger-delay-3">
+            <div class="team-avatar">3</div>
+            <h3>Muhammad Tayan Aziz</h3>
+            <p>Email: tayankhan1122@gmail.com</p>
+            <div style="margin-top: 15px;">
+                <small></small>
+            </div>
+        </div>
+        
+        <div class="team-card fade-in stagger-delay-1">
+            <div class="team-avatar">4</div>
+            <h3>Project Supervisor: Engr.Dr Abdul Rehman Chishti</h3>
+            <p>Depatment of Information and Communication Engineering</p>
+            <div style="margin-top: 15px;">
+                <small>The Islamia University of Bahawalpur</small>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="fade-in">
+    <div class="footer-content">
+        <div class="logo" style="font-size: 28px; margin-bottom: 20px;">
+            <i class="fas fa-shield-alt"></i>
+            Deep<span>Guard</span>
+        </div>
+        
+        <p style="max-width: 600px; margin: 0 auto 30px; color: var(--text-secondary);">
+            Advanced AI-powered audio authentication system for detecting and preventing deepfake audio threats.
+        </p>
+        
+        <div class="footer-links">
+            <a href="#home"><i class="fas fa-home"></i> Home</a>
+            <a href="#detection"><i class="fas fa-search"></i> Detection</a>
+            <a href="#features"><i class="fas fa-star"></i> Features</a>
+            <a href="#about"><i class="fas fa-info-circle"></i> About</a>
+            <a href="#"><i class="fas fa-file-alt"></i> Documentation</a>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2025 DeepGuard — AI Audio Authentication System. All rights reserved.</p>
+            <p style="margin-top: 10px; font-size: 12px; color: rgba(255,255,255,0.3);">
+                Final Year Project | Cyber Security & Digital Forensics
+            </p>
+        </div>
+    </div>
+</footer>
+
+<script>
+/* ---------- GLOBAL VARIABLES ---------- */
+let recorder = null;
+let chunks = [];
+let audioBlob = null;
+let audioElement = document.getElementById('audioPreview');
+let audioPlayer = document.getElementById('audioPlayer');
+let recordBtn = document.getElementById('recordBtn');
+let stopBtn = document.getElementById('stopBtn');
+let playBtn = document.getElementById('playBtn');
+let customPlayBtn = document.getElementById('customPlay');
+let customProgress = document.getElementById('customProgress');
+let customProgressFilled = document.getElementById('customProgressFilled');
+let currentTimeEl = document.getElementById('currentTime');
+let durationEl = document.getElementById('duration');
+let playbackStatusEl = document.getElementById('playbackStatus');
+let visualizer = document.getElementById('visualizer');
+let recStatusEl = document.getElementById('recStatus');
+let recordedFile = document.getElementById('recordedFile');
+let uploadRecorded = document.getElementById('uploadRecorded');
+
+/* ---------- AUTHENTICATION SYSTEM ---------- */
+const authModal = document.getElementById('authModal');
+const closeAuth = document.getElementById('closeAuth');
+const authBtn = document.getElementById('authBtn');
+const promptAuthBtn = document.getElementById('promptAuthBtn');
+const loginTab = document.getElementById('loginTab');
+const registerTab = document.getElementById('registerTab');
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
+const loginError = document.getElementById('loginError');
+const loginSuccess = document.getElementById('loginSuccess');
+const registerError = document.getElementById('registerError');
+const registerSuccess = document.getElementById('registerSuccess');
+const userInfo = document.getElementById('userInfo');
+const userName = document.getElementById('userName');
+const userAvatar = document.getElementById('userAvatar');
+const logoutBtn = document.getElementById('logoutBtn');
+const startDetectionBtn = document.getElementById('startDetectionBtn');
+const loginPrompt = document.getElementById('loginPrompt');
+const detectionInterface = document.getElementById('detectionInterface');
+
+// Check if user is logged in on page load
+document.addEventListener('DOMContentLoaded', () => {
+    checkAuthStatus();
+});
+
+// Show auth modal
+function showAuthModal() {
+    authModal.style.display = 'flex';
+}
+
+// Hide auth modal
+function hideAuthModal() {
+    authModal.style.display = 'none';
+    resetAuthForms();
+}
+
+// Reset auth forms
+function resetAuthForms() {
+    loginError.classList.remove('show');
+    loginSuccess.classList.remove('show');
+    registerError.classList.remove('show');
+    registerSuccess.classList.remove('show');
+    document.getElementById('loginEmail').value = '';
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('registerName').value = '';
+    document.getElementById('registerEmail').value = '';
+    document.getElementById('registerPassword').value = '';
+    document.getElementById('registerConfirmPassword').value = '';
+}
+
+// Switch between login and register tabs
+loginTab.addEventListener('click', () => {
+    loginTab.classList.add('active');
+    registerTab.classList.remove('active');
+    loginForm.classList.add('active');
+    registerForm.classList.remove('active');
+    resetAuthForms();
+});
+
+registerTab.addEventListener('click', () => {
+    registerTab.classList.add('active');
+    loginTab.classList.remove('active');
+    registerForm.classList.add('active');
+    loginForm.classList.remove('active');
+    resetAuthForms();
+});
+
+// Handle login
+loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    
+    // Get users from localStorage
+    const users = JSON.parse(localStorage.getItem('deepguard_users')) || [];
+    
+    // Find user
+    const user = users.find(u => u.email === email && u.password === password);
+    
+    if (user) {
+        // Login successful
+        loginError.classList.remove('show');
+        loginSuccess.classList.add('show');
+        
+        // Store current user in localStorage
+        localStorage.setItem('deepguard_current_user', JSON.stringify({
+            name: user.name,
+            email: user.email,
+            initials: user.name.split(' ').map(n => n[0]).join('').toUpperCase()
+        }));
+        
+        // Update UI after delay
+        setTimeout(() => {
+            hideAuthModal();
+            checkAuthStatus();
+        }, 1500);
+    } else {
+        // Login failed
+        loginSuccess.classList.remove('show');
+        loginError.classList.add('show');
+    }
+});
+
+// Handle registration
+registerForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const name = document.getElementById('registerName').value.trim();
+    const email = document.getElementById('registerEmail').value.trim();
+    const password = document.getElementById('registerPassword').value;
+    const confirmPassword = document.getElementById('registerConfirmPassword').value;
+    
+    // Validation
+    if (!name || !email || !password || !confirmPassword) {
+        registerError.textContent = 'All fields are required';
+        registerError.classList.add('show');
+        return;
+    }
+    
+    if (password.length < 6) {
+        registerError.textContent = 'Password must be at least 6 characters';
+        registerError.classList.add('show');
+        return;
+    }
+    
+    if (password !== confirmPassword) {
+        registerError.textContent = 'Passwords do not match';
+        registerError.classList.add('show');
+        return;
+    }
+    
+    // Check if email already exists
+    const users = JSON.parse(localStorage.getItem('deepguard_users')) || [];
+    if (users.find(u => u.email === email)) {
+        registerError.textContent = 'Email already registered';
+        registerError.classList.add('show');
+        return;
+    }
+    
+    // Register new user
+    const newUser = {
+        id: Date.now(),
+        name: name,
+        email: email,
+        password: password,
+        createdAt: new Date().toISOString()
+    };
+    
+    users.push(newUser);
+    localStorage.setItem('deepguard_users', JSON.stringify(users));
+    
+    // Show success message
+    registerError.classList.remove('show');
+    registerSuccess.classList.add('show');
+    
+    // Switch to login tab after delay
+    setTimeout(() => {
+        registerSuccess.classList.remove('show');
+        loginTab.click();
+        document.getElementById('loginEmail').value = email;
+        document.getElementById('loginPassword').value = password;
+    }, 2000);
+});
+
+// Handle logout
+logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem('deepguard_current_user');
+    checkAuthStatus();
+});
+
+// Check authentication status
+function checkAuthStatus() {
+    const currentUser = JSON.parse(localStorage.getItem('deepguard_current_user'));
+    
+    if (currentUser) {
+        // User is logged in
+        authBtn.style.display = 'none';
+        userInfo.style.display = 'flex';
+        userName.textContent = currentUser.name;
+        userAvatar.textContent = currentUser.initials || 'U';
+        
+        // Show detection interface
+        loginPrompt.style.display = 'none';
+        detectionInterface.style.display = 'block';
+    } else {
+        // User is not logged in
+        authBtn.style.display = 'inline-flex';
+        userInfo.style.display = 'none';
+        
+        // Show login prompt
+        loginPrompt.style.display = 'block';
+        detectionInterface.style.display = 'none';
+    }
+}
+
+// Event listeners for auth buttons
+authBtn.addEventListener('click', () => {
+    showAuthModal();
+    loginTab.click();
+});
+
+promptAuthBtn.addEventListener('click', () => {
+    showAuthModal();
+    loginTab.click();
+});
+
+closeAuth.addEventListener('click', hideAuthModal);
+
+// Close modal when clicking outside
+authModal.addEventListener('click', (e) => {
+    if (e.target === authModal) {
+        hideAuthModal();
+    }
+});
+
+// Start detection button scrolls to detection section
+startDetectionBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const currentUser = JSON.parse(localStorage.getItem('deepguard_current_user'));
+    
+    if (currentUser) {
+        // User is logged in, scroll to detection
+        document.getElementById('detection').scrollIntoView({ behavior: 'smooth' });
+    } else {
+        // User is not logged in, show auth modal
+        showAuthModal();
+        loginTab.click();
+    }
+});
+
+/* ---------- HEADER SCROLL EFFECT ---------- */
+const header = document.getElementById('mainHeader');
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+        header.classList.add('header-scrolled');
+    } else {
+        header.classList.remove('header-scrolled');
+    }
+});
+
+/* ---------- RECORDING FUNCTIONALITY ---------- */
+recordBtn.addEventListener('click', async () => {
+    try {
+        let stream = await navigator.mediaDevices.getUserMedia({ 
+            audio: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                sampleRate: 44100
+            } 
+        });
+        
+        recorder = new MediaRecorder(stream, {
+            mimeType: 'audio/webm;codecs=opus'
+        });
+        
+        chunks = [];
+        
+        recorder.ondataavailable = (e) => {
+            if (e.data.size > 0) {
+                chunks.push(e.data);
+            }
+        };
+        
+        recorder.onstop = () => {
+            audioBlob = new Blob(chunks, { type: "audio/webm" });
+            
+            // Create audio URL for playback
+            const audioUrl = URL.createObjectURL(audioBlob);
+            audioElement.src = audioUrl;
+            
+            // Create file for upload
+            let file = new File([audioBlob], `recording_${Date.now()}.webm`, {
+                type: "audio/webm"
+            });
+            
+            let dt = new DataTransfer();
+            dt.items.add(file);
+            recordedFile.files = dt.files;
+            
+            // Show upload form and player
+            uploadRecorded.style.display = "block";
+            audioPlayer.style.display = "flex";
+            playBtn.style.display = "inline-block";
+            
+            // Update status
+            recStatusEl.innerHTML = `<i class="fas fa-check-circle lime"></i> <span>Recording ready! Listen or upload for analysis.</span>`;
+            recStatusEl.classList.remove('recording');
+            visualizer.style.display = "none";
+            
+            // Stop all tracks
+            stream.getTracks().forEach(track => track.stop());
+            
+            // Setup audio element for playback
+            setupAudioElement();
+        };
+        
+        recorder.start(100); // Collect data every 100ms
+        
+        // Update UI
+        recordBtn.style.display = "none";
+        stopBtn.style.display = "inline-block";
+        visualizer.style.display = "flex";
+        
+        recStatusEl.innerHTML = `<i class="fas fa-microphone red"></i> <span>Recording... Speak clearly into your microphone</span>`;
+        recStatusEl.classList.add('recording');
+        
+    } catch (error) {
+        console.error('Error accessing microphone:', error);
+        recStatusEl.innerHTML = `<i class="fas fa-exclamation-triangle red"></i> <span>Error accessing microphone. Please check permissions.</span>`;
+    }
+});
+
+/* ---------- STOP RECORDING ---------- */
+stopBtn.addEventListener('click', () => {
+    if (recorder && recorder.state === 'recording') {
+        recorder.stop();
+        stopBtn.style.display = "none";
+        recordBtn.style.display = "inline-block";
+        recStatusEl.innerHTML = `<i class="fas fa-check-circle lime"></i> <span>Recording stopped. Click Play to listen.</span>`;
+    }
+});
+
+/* ---------- PLAYBACK FUNCTIONALITY ---------- */
+playBtn.addEventListener('click', () => {
+    if (audioBlob) {
+        audioPlayer.style.display = "flex";
+        if (audioElement.paused) {
+            audioElement.play();
+            playBtn.innerHTML = `<i class="fas fa-pause"></i> Pause`;
+            playBtn.style.background = "linear-gradient(90deg, #FF9800, #FFB74D)";
+        } else {
+            audioElement.pause();
+            playBtn.innerHTML = `<i class="fas fa-play"></i> Playback`;
+            playBtn.style.background = "linear-gradient(90deg, #4CAF50, #66BB6A)";
+        }
+    }
+});
+
+/* ---------- SETUP AUDIO ELEMENT ---------- */
+function setupAudioElement() {
+    audioElement.onloadedmetadata = () => {
+        const duration = audioElement.duration;
+        durationEl.textContent = formatTime(duration);
+    };
+    
+    audioElement.addEventListener('timeupdate', () => {
+        const currentTime = audioElement.currentTime;
+        const duration = audioElement.duration;
+        
+        currentTimeEl.textContent = formatTime(currentTime);
+        
+        if (duration && !isNaN(duration)) {
+            const progress = (currentTime / duration) * 100;
+            customProgressFilled.style.width = `${progress}%`;
+            
+            if (audioElement.paused) {
+                playbackStatusEl.textContent = "Paused";
+                playBtn.innerHTML = `<i class="fas fa-play"></i> Playback`;
+                playBtn.style.background = "linear-gradient(90deg, #4CAF50, #66BB6A)";
+            } else {
+                playbackStatusEl.textContent = "Playing";
+                playBtn.innerHTML = `<i class="fas fa-pause"></i> Pause`;
+                playBtn.style.background = "linear-gradient(90deg, #FF9800, #FFB74D)";
+            }
+        }
+    });
+    
+    audioElement.addEventListener('ended', () => {
+        playbackStatusEl.textContent = "Ended";
+        playBtn.innerHTML = `<i class="fas fa-play"></i> Playback`;
+        playBtn.style.background = "linear-gradient(90deg, #4CAF50, #66BB6A)";
+        customProgressFilled.style.width = "100%";
+    });
+}
+
+/* ---------- CUSTOM PLAYBACK CONTROLS ---------- */
+customPlayBtn.addEventListener('click', () => {
+    if (audioElement) {
+        if (audioElement.paused) {
+            audioElement.play();
+            customPlayBtn.innerHTML = `<i class="fas fa-pause"></i>`;
+        } else {
+            audioElement.pause();
+            customPlayBtn.innerHTML = `<i class="fas fa-play"></i>`;
+        }
+    }
+});
+
+customProgress.addEventListener('click', (e) => {
+    if (audioElement) {
+        const rect = customProgress.getBoundingClientRect();
+        const pos = (e.clientX - rect.left) / rect.width;
+        audioElement.currentTime = pos * audioElement.duration;
+    }
+});
+
+/* ---------- TIME FORMATTING ---------- */
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+/* ---------- PARTICLES ---------- */
+const particles = document.getElementById("particles");
+for (let i = 0; i < 12; i++) {
+    let p = document.createElement("div");
+    p.className = "particle";
+    let s = Math.random() * 5 + 4;
+    p.style.width = s + "px";
+    p.style.height = s + "px";
+    p.style.left = Math.random() * 100 + "vw";
+    p.style.animationDuration = 10 + Math.random() * 6 + "s";
+    particles.appendChild(p);
+}
+
+/* ---------- DETECTION GLOW OBSERVER ---------- */
+const detectionSection = document.getElementById("detection");
+
+const observer = new IntersectionObserver(
+    entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                detectionSection.classList.add("glow-active");
+            } else {
+                detectionSection.classList.remove("glow-active");
+            }
+        });
+    },
+    { threshold: 0.6 }
+);
+
+observer.observe(detectionSection);
+</script>
+
+</body>
+</html>
