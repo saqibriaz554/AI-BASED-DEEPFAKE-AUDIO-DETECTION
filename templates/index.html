@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>DeepGuard — AI Audio Authentication</title>
+<title>AI-Based Deepfake Audio Detection</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -183,193 +183,6 @@ nav a::after {
 
 nav a:hover::after {
     width: 100%;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.user-avatar {
-    width: 36px;
-    height: 36px;
-    background: var(--primary-gradient);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: #000;
-    font-size: 14px;
-}
-
-/* ---------- AUTH MODAL ---------- */
-.auth-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    z-index: 2000;
-    justify-content: center;
-    align-items: center;
-    backdrop-filter: blur(5px);
-}
-
-.auth-container {
-    background: var(--card-bg);
-    border-radius: var(--border-radius);
-    padding: 40px;
-    width: 90%;
-    max-width: 450px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-    border: 1px solid rgba(58,245,229,0.2);
-    animation: fadeInUp 0.5s ease;
-}
-
-.auth-header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.auth-header h2 {
-    font-size: 28px;
-    margin-bottom: 10px;
-    background: var(--primary-gradient);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.auth-header p {
-    color: var(--text-secondary);
-    font-size: 14px;
-}
-
-.auth-tabs {
-    display: flex;
-    margin-bottom: 30px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.auth-tab {
-    flex: 1;
-    padding: 15px;
-    text-align: center;
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-    position: relative;
-}
-
-.auth-tab.active {
-    color: var(--success);
-}
-
-.auth-tab.active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: var(--primary-gradient);
-}
-
-.auth-form {
-    display: none;
-}
-
-.auth-form.active {
-    display: block;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    color: var(--text-secondary);
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 15px;
-    background: rgba(11,22,38,0.8);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px;
-    color: var(--text-primary);
-    font-size: 15px;
-    transition: var(--transition);
-}
-
-.form-group input:focus {
-    outline: none;
-    border-color: var(--success);
-    box-shadow: 0 0 0 2px rgba(58,245,229,0.1);
-}
-
-.auth-error {
-    color: var(--danger);
-    font-size: 14px;
-    margin-top: 10px;
-    display: none;
-}
-
-.auth-error.show {
-    display: block;
-}
-
-.auth-success {
-    color: var(--success);
-    font-size: 14px;
-    margin-top: 10px;
-    display: none;
-}
-
-.auth-success.show {
-    display: block;
-}
-
-.auth-footer {
-    text-align: center;
-    margin-top: 20px;
-    color: var(--text-secondary);
-    font-size: 14px;
-}
-
-.auth-footer a {
-    color: var(--success);
-    text-decoration: none;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.close-auth {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    font-size: 24px;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.close-auth:hover {
-    color: var(--success);
 }
 
 /* ---------- HERO ---------- */
@@ -943,41 +756,6 @@ footer {
     .feature-card {
         padding: 25px 20px;
     }
-    
-    .auth-container {
-        padding: 30px 20px;
-    }
-}
-
-/* ---------- LOGIN PROMPT ---------- */
-.login-prompt {
-    text-align: center;
-    padding: 40px;
-    background: rgba(11,22,38,0.8);
-    border-radius: var(--border-radius);
-    border: 1px solid rgba(255,255,255,0.1);
-    margin-top: 30px;
-}
-
-.login-prompt i {
-    font-size: 48px;
-    margin-bottom: 20px;
-    background: var(--primary-gradient);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.login-prompt h3 {
-    font-size: 24px;
-    margin-bottom: 15px;
-    color: var(--text-primary);
-}
-
-.login-prompt p {
-    color: var(--text-secondary);
-    margin-bottom: 25px;
-    font-size: 16px;
 }
 </style>
 </head>
@@ -985,68 +763,6 @@ footer {
 <body>
 
 <div id="particles"></div>
-
-<!-- Auth Modal -->
-<div class="auth-modal" id="authModal">
-    <div class="auth-container">
-        <button class="close-auth" id="closeAuth">&times;</button>
-        <div class="auth-header">
-            <h2 id="authTitle">Welcome to DeepGuard</h2>
-            <p id="authSubtitle">Access advanced audio deepfake detection</p>
-        </div>
-        
-        <div class="auth-tabs">
-            <button class="auth-tab active" id="loginTab">Login</button>
-            <button class="auth-tab" id="registerTab">Register</button>
-        </div>
-        
-        <!-- Login Form -->
-        <form class="auth-form active" id="loginForm">
-            <div class="form-group">
-                <label for="loginEmail">Email</label>
-                <input type="email" id="loginEmail" placeholder="Enter your email" required>
-            </div>
-            <div class="form-group">
-                <label for="loginPassword">Password</label>
-                <input type="password" id="loginPassword" placeholder="Enter your password" required>
-            </div>
-            <div class="auth-error" id="loginError">Invalid email or password</div>
-            <div class="auth-success" id="loginSuccess">Login successful! Redirecting...</div>
-            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
-                <i class="fas fa-sign-in-alt"></i> Login
-            </button>
-        </form>
-        
-        <!-- Register Form -->
-        <form class="auth-form" id="registerForm">
-            <div class="form-group">
-                <label for="registerName">Full Name</label>
-                <input type="text" id="registerName" placeholder="Enter your full name" required>
-            </div>
-            <div class="form-group">
-                <label for="registerEmail">Email</label>
-                <input type="email" id="registerEmail" placeholder="Enter your email" required>
-            </div>
-            <div class="form-group">
-                <label for="registerPassword">Password</label>
-                <input type="password" id="registerPassword" placeholder="Create a password" required minlength="6">
-            </div>
-            <div class="form-group">
-                <label for="registerConfirmPassword">Confirm Password</label>
-                <input type="password" id="registerConfirmPassword" placeholder="Confirm your password" required>
-            </div>
-            <div class="auth-error" id="registerError"></div>
-            <div class="auth-success" id="registerSuccess">Registration successful! You can now login.</div>
-            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
-                <i class="fas fa-user-plus"></i> Create Account
-            </button>
-        </form>
-        
-        <div class="auth-footer">
-            <p>By creating an account, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
-        </div>
-    </div>
-</div>
 
 <header id="mainHeader">
     <div class="logo">
@@ -1059,26 +775,16 @@ footer {
         <a href="#features"><i class="fas fa-star"></i> Features</a>
         <a href="#about"><i class="fas fa-info-circle"></i> About</a>
     </nav>
-    <div class="user-info" id="userInfo" style="display: none;">
-        <div class="user-avatar" id="userAvatar">U</div>
-        <span id="userName">User</span>
-        <button class="btn btn-secondary" id="logoutBtn" style="padding: 8px 16px;">
-            <i class="fas fa-sign-out-alt"></i> Logout
-        </button>
-    </div>
-    <button class="btn btn-primary" id="authBtn" style="padding: 10px 20px;">
-        <i class="fas fa-user"></i> Login
-    </button>
 </header>
 
 <section id="home" class="hero fade-in">
     <div class="hero-badge fade-in">
         <i class="fas fa-bolt"></i>
-        <span>Unmask AI-Generated Audio </span>
+        <span>Unmask AI-Generated Audio</span>
     </div>
-    <h1>AI Based <span>Deepfake</span> Audio Detection</h1>
+    <h1>AI Based <span>Deepfake Audio</span> Detection</h1>
     <p>Human or Machine? Our advanced AI distinguishes real voices from synthetic fakes with precision. Upload audio now for instant analysis.</p>
-    <a href="#detection" class="btn btn-primary" id="startDetectionBtn">
+    <a href="#detection" class="btn btn-primary">
         <i class="fas fa-play"></i> Start Detection
     </a>
 </section>
@@ -1090,125 +796,112 @@ footer {
         <p>Upload or record audio to detect AI-generated content</p>
     </div>
 
-    <!-- Login Prompt (shown when not logged in) -->
-    <div class="login-prompt" id="loginPrompt">
-        <i class="fas fa-lock"></i>
-        <h3>Authentication Required</h3>
-        <p>Please login or create an account to access the audio detection features.</p>
-        <button class="btn btn-primary" id="promptAuthBtn">
-            <i class="fas fa-user"></i> Login / Register
+    <form action="/analyze" method="POST" enctype="multipart/form-data" class="fade-in stagger-delay-1">
+        <div class="file-input-wrapper">
+            <input type="file" name="audio" 
+                   accept=".wav,.mp3,.flac,.webm,.opus,.ogg,.m4a,.aac" 
+                   required>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-chart-bar"></i> Analyze Audio
         </button>
+    </form>
+
+    <div class="fade-in stagger-delay-2">
+        <div class="recording-status" id="recStatus">
+            <i class="fas fa-microphone"></i>
+            <span>Ready to record</span>
+        </div>
+        
+        <div class="recording-visualizer" id="visualizer" style="display: none;">
+            <div class="recording-bar" style="animation-delay: 0.1s"></div>
+            <div class="recording-bar" style="animation-delay: 0.2s"></div>
+            <div class="recording-bar" style="animation-delay: 0.3s"></div>
+            <div class="recording-bar" style="animation-delay: 0.4s"></div>
+            <div class="recording-bar" style="animation-delay: 0.5s"></div>
+        </div>
+        
+        <div class="btn-group">
+            <button class="btn btn-primary" id="recordBtn">
+                <i class="fas fa-microphone"></i> Start Recording
+            </button>
+            <button class="btn btn-danger" id="stopBtn" style="display: none;">
+                <i class="fas fa-stop"></i> Stop
+            </button>
+            <button class="btn btn-success" id="playBtn" style="display: none;">
+                <i class="fas fa-play"></i> Playback
+            </button>
+        </div>
     </div>
 
-    <!-- Detection Interface (shown when logged in) -->
-    <div id="detectionInterface" style="display: none;">
-        <form action="/analyze" method="POST" enctype="multipart/form-data" class="fade-in stagger-delay-1">
-            <div class="file-input-wrapper">
-                <input type="file" name="audio" 
-                       accept=".wav,.mp3,.flac,.webm,.opus,.ogg,.m4a,.aac" 
-                       required>
+    <!-- Audio Player -->
+    <div class="audio-player" id="audioPlayer">
+        <audio id="audioPreview" controls style="display: none;"></audio>
+        <div class="custom-audio-player">
+            <div class="custom-controls">
+                <button id="customPlay" class="btn btn-secondary" style="padding: 8px 16px;">
+                    <i class="fas fa-play"></i>
+                </button>
+                <div class="custom-progress" id="customProgress">
+                    <div class="custom-progress-filled" id="customProgressFilled"></div>
+                </div>
+                <span id="currentTime">0:00</span>
             </div>
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-chart-bar"></i> Analyze Audio
-            </button>
-        </form>
+            <div class="playback-info">
+                <span id="duration">0:00</span>
+                <span id="playbackStatus">Paused</span>
+            </div>
+        </div>
+    </div>
 
-        <div class="fade-in stagger-delay-2">
-            <div class="recording-status" id="recStatus">
-                <i class="fas fa-microphone"></i>
-                <span>Ready to record</span>
+    <form id="uploadRecorded" action="/analyze" method="POST"
+          enctype="multipart/form-data" style="display:none;">
+        <input type="file" name="audio" id="recordedFile">
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-upload"></i> Upload Recording
+        </button>
+    </form>
+
+    {% if result %}
+    <div class="result-box fade-in">
+        <div class="result-header">
+            <div class="result-icon">
+                {% if color == 'lime' %}
+                <i class="fas fa-check-circle lime"></i>
+                {% else %}
+                <i class="fas fa-times-circle red"></i>
+                {% endif %}
             </div>
-            
-            <div class="recording-visualizer" id="visualizer" style="display: none;">
-                <div class="recording-bar" style="animation-delay: 0.1s"></div>
-                <div class="recording-bar" style="animation-delay: 0.2s"></div>
-                <div class="recording-bar" style="animation-delay: 0.3s"></div>
-                <div class="recording-bar" style="animation-delay: 0.4s"></div>
-                <div class="recording-bar" style="animation-delay: 0.5s"></div>
+            <div>
+                <h3 class="{{ color }}">{{ result }}</h3>
+                <p>Analysis completed</p>
             </div>
-            
-            <div class="btn-group">
-                <button class="btn btn-primary" id="recordBtn">
-                    <i class="fas fa-microphone"></i> Start Recording
-                </button>
-                <button class="btn btn-danger" id="stopBtn" style="display: none;">
-                    <i class="fas fa-stop"></i> Stop
-                </button>
-                <button class="btn btn-success" id="playBtn" style="display: none;">
-                    <i class="fas fa-play"></i> Playback
-                </button>
+        </div>
+        
+        <div class="result-details">
+            <div class="result-detail">
+                <div class="result-label">Confidence Score</div>
+                <div class="result-value {{ color }}">{{ confidence }}</div>
+            </div>
+            <div class="result-detail">
+                <div class="result-label">Audio Duration</div>
+                <div class="result-value">{{ duration }}</div>
+            </div>
+            <div class="result-detail {{ 'warning' if noise_flag == 'Yes' else '' }}">
+                <div class="result-label">Noise Detection</div>
+                <div class="result-value {{ noise_color }}">{{ noise_flag }}</div>
             </div>
         </div>
 
-        <!-- Audio Player -->
-        <div class="audio-player" id="audioPlayer">
-            <audio id="audioPreview" controls style="display: none;"></audio>
-            <div class="custom-audio-player">
-                <div class="custom-controls">
-                    <button id="customPlay" class="btn btn-secondary" style="padding: 8px 16px;">
-                        <i class="fas fa-play"></i>
-                    </button>
-                    <div class="custom-progress" id="customProgress">
-                        <div class="custom-progress-filled" id="customProgressFilled"></div>
-                    </div>
-                    <span id="currentTime">0:00</span>
-                </div>
-                <div class="playback-info">
-                    <span id="duration">0:00</span>
-                    <span id="playbackStatus">Paused</span>
-                </div>
-            </div>
-        </div>
-
-        <form id="uploadRecorded" action="/analyze" method="POST"
-              enctype="multipart/form-data" style="display:none;">
-            <input type="file" name="audio" id="recordedFile">
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-upload"></i> Upload Recording
-            </button>
-        </form>
-
-        {% if result %}
-        <div class="result-box fade-in">
-            <div class="result-header">
-                <div class="result-icon">
-                    {% if color == 'lime' %}
-                    <i class="fas fa-check-circle lime"></i>
-                    {% else %}
-                    <i class="fas fa-times-circle red"></i>
-                    {% endif %}
-                </div>
-                <div>
-                    <h3 class="{{ color }}">{{ result }}</h3>
-                    <p>Analysis completed</p>
-                </div>
-            </div>
-            
-            <div class="result-details">
-                <div class="result-detail">
-                    <div class="result-label">Confidence Score</div>
-                    <div class="result-value {{ color }}">{{ confidence }}</div>
-                </div>
-                <div class="result-detail">
-                    <div class="result-label">Audio Duration</div>
-                    <div class="result-value">{{ duration }}</div>
-                </div>
-                <div class="result-detail {{ 'warning' if noise_flag == 'Yes' else '' }}">
-                    <div class="result-label">Noise Detection</div>
-                    <div class="result-value {{ noise_color }}">{{ noise_flag }}</div>
-                </div>
-            </div>
-
-            {% if pdf_url %}
-            <div style="text-align: center; margin-top: 20px;">
-                <a href="{{ url_for('download', filename=pdf_url) }}" class="btn btn-secondary">
-                    <i class="fas fa-download"></i> Download Detailed Report
-                </a>
-            </div>
-            {% endif %}
+        {% if pdf_url %}
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{{ url_for('download', filename=pdf_url) }}" class="btn btn-secondary">
+                <i class="fas fa-download"></i> Download Detailed Report
+            </a>
         </div>
         {% endif %}
     </div>
+    {% endif %}
 </div>
 
 <section id="features" class="features-section fade-in">
@@ -1266,7 +959,6 @@ footer {
     <br><br>
     Developed as a <strong>Final Year Project</strong> in <strong>Cyber Security and Digital Forensics</strong>, this work addresses a critical challenge in digital evidence verification and contributes to enhancing trust in audio-based communications.
 </p>
-
     </div>
 
     <div class="section-header">
@@ -1333,7 +1025,7 @@ footer {
         </div>
         
         <div class="footer-bottom">
-            <p>© 2025 DeepGuard — AI Audio Authentication System. All rights reserved.</p>
+            <p>© 2026 DeepGuard — AI Audio Authentication System. All rights reserved.</p>
             <p style="margin-top: 10px; font-size: 12px; color: rgba(255,255,255,0.3);">
                 Final Year Project | Cyber Security & Digital Forensics
             </p>
@@ -1361,238 +1053,6 @@ let visualizer = document.getElementById('visualizer');
 let recStatusEl = document.getElementById('recStatus');
 let recordedFile = document.getElementById('recordedFile');
 let uploadRecorded = document.getElementById('uploadRecorded');
-
-/* ---------- AUTHENTICATION SYSTEM ---------- */
-const authModal = document.getElementById('authModal');
-const closeAuth = document.getElementById('closeAuth');
-const authBtn = document.getElementById('authBtn');
-const promptAuthBtn = document.getElementById('promptAuthBtn');
-const loginTab = document.getElementById('loginTab');
-const registerTab = document.getElementById('registerTab');
-const loginForm = document.getElementById('loginForm');
-const registerForm = document.getElementById('registerForm');
-const loginError = document.getElementById('loginError');
-const loginSuccess = document.getElementById('loginSuccess');
-const registerError = document.getElementById('registerError');
-const registerSuccess = document.getElementById('registerSuccess');
-const userInfo = document.getElementById('userInfo');
-const userName = document.getElementById('userName');
-const userAvatar = document.getElementById('userAvatar');
-const logoutBtn = document.getElementById('logoutBtn');
-const startDetectionBtn = document.getElementById('startDetectionBtn');
-const loginPrompt = document.getElementById('loginPrompt');
-const detectionInterface = document.getElementById('detectionInterface');
-
-// Check if user is logged in on page load
-document.addEventListener('DOMContentLoaded', () => {
-    checkAuthStatus();
-});
-
-// Show auth modal
-function showAuthModal() {
-    authModal.style.display = 'flex';
-}
-
-// Hide auth modal
-function hideAuthModal() {
-    authModal.style.display = 'none';
-    resetAuthForms();
-}
-
-// Reset auth forms
-function resetAuthForms() {
-    loginError.classList.remove('show');
-    loginSuccess.classList.remove('show');
-    registerError.classList.remove('show');
-    registerSuccess.classList.remove('show');
-    document.getElementById('loginEmail').value = '';
-    document.getElementById('loginPassword').value = '';
-    document.getElementById('registerName').value = '';
-    document.getElementById('registerEmail').value = '';
-    document.getElementById('registerPassword').value = '';
-    document.getElementById('registerConfirmPassword').value = '';
-}
-
-// Switch between login and register tabs
-loginTab.addEventListener('click', () => {
-    loginTab.classList.add('active');
-    registerTab.classList.remove('active');
-    loginForm.classList.add('active');
-    registerForm.classList.remove('active');
-    resetAuthForms();
-});
-
-registerTab.addEventListener('click', () => {
-    registerTab.classList.add('active');
-    loginTab.classList.remove('active');
-    registerForm.classList.add('active');
-    loginForm.classList.remove('active');
-    resetAuthForms();
-});
-
-// Handle login
-loginForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    
-    const email = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPassword').value;
-    
-    // Get users from localStorage
-    const users = JSON.parse(localStorage.getItem('deepguard_users')) || [];
-    
-    // Find user
-    const user = users.find(u => u.email === email && u.password === password);
-    
-    if (user) {
-        // Login successful
-        loginError.classList.remove('show');
-        loginSuccess.classList.add('show');
-        
-        // Store current user in localStorage
-        localStorage.setItem('deepguard_current_user', JSON.stringify({
-            name: user.name,
-            email: user.email,
-            initials: user.name.split(' ').map(n => n[0]).join('').toUpperCase()
-        }));
-        
-        // Update UI after delay
-        setTimeout(() => {
-            hideAuthModal();
-            checkAuthStatus();
-        }, 1500);
-    } else {
-        // Login failed
-        loginSuccess.classList.remove('show');
-        loginError.classList.add('show');
-    }
-});
-
-// Handle registration
-registerForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    
-    const name = document.getElementById('registerName').value.trim();
-    const email = document.getElementById('registerEmail').value.trim();
-    const password = document.getElementById('registerPassword').value;
-    const confirmPassword = document.getElementById('registerConfirmPassword').value;
-    
-    // Validation
-    if (!name || !email || !password || !confirmPassword) {
-        registerError.textContent = 'All fields are required';
-        registerError.classList.add('show');
-        return;
-    }
-    
-    if (password.length < 6) {
-        registerError.textContent = 'Password must be at least 6 characters';
-        registerError.classList.add('show');
-        return;
-    }
-    
-    if (password !== confirmPassword) {
-        registerError.textContent = 'Passwords do not match';
-        registerError.classList.add('show');
-        return;
-    }
-    
-    // Check if email already exists
-    const users = JSON.parse(localStorage.getItem('deepguard_users')) || [];
-    if (users.find(u => u.email === email)) {
-        registerError.textContent = 'Email already registered';
-        registerError.classList.add('show');
-        return;
-    }
-    
-    // Register new user
-    const newUser = {
-        id: Date.now(),
-        name: name,
-        email: email,
-        password: password,
-        createdAt: new Date().toISOString()
-    };
-    
-    users.push(newUser);
-    localStorage.setItem('deepguard_users', JSON.stringify(users));
-    
-    // Show success message
-    registerError.classList.remove('show');
-    registerSuccess.classList.add('show');
-    
-    // Switch to login tab after delay
-    setTimeout(() => {
-        registerSuccess.classList.remove('show');
-        loginTab.click();
-        document.getElementById('loginEmail').value = email;
-        document.getElementById('loginPassword').value = password;
-    }, 2000);
-});
-
-// Handle logout
-logoutBtn.addEventListener('click', () => {
-    localStorage.removeItem('deepguard_current_user');
-    checkAuthStatus();
-});
-
-// Check authentication status
-function checkAuthStatus() {
-    const currentUser = JSON.parse(localStorage.getItem('deepguard_current_user'));
-    
-    if (currentUser) {
-        // User is logged in
-        authBtn.style.display = 'none';
-        userInfo.style.display = 'flex';
-        userName.textContent = currentUser.name;
-        userAvatar.textContent = currentUser.initials || 'U';
-        
-        // Show detection interface
-        loginPrompt.style.display = 'none';
-        detectionInterface.style.display = 'block';
-    } else {
-        // User is not logged in
-        authBtn.style.display = 'inline-flex';
-        userInfo.style.display = 'none';
-        
-        // Show login prompt
-        loginPrompt.style.display = 'block';
-        detectionInterface.style.display = 'none';
-    }
-}
-
-// Event listeners for auth buttons
-authBtn.addEventListener('click', () => {
-    showAuthModal();
-    loginTab.click();
-});
-
-promptAuthBtn.addEventListener('click', () => {
-    showAuthModal();
-    loginTab.click();
-});
-
-closeAuth.addEventListener('click', hideAuthModal);
-
-// Close modal when clicking outside
-authModal.addEventListener('click', (e) => {
-    if (e.target === authModal) {
-        hideAuthModal();
-    }
-});
-
-// Start detection button scrolls to detection section
-startDetectionBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    const currentUser = JSON.parse(localStorage.getItem('deepguard_current_user'));
-    
-    if (currentUser) {
-        // User is logged in, scroll to detection
-        document.getElementById('detection').scrollIntoView({ behavior: 'smooth' });
-    } else {
-        // User is not logged in, show auth modal
-        showAuthModal();
-        loginTab.click();
-    }
-});
 
 /* ---------- HEADER SCROLL EFFECT ---------- */
 const header = document.getElementById('mainHeader');
